@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -28,6 +28,9 @@ namespace StopWatch
             btnReset.Click += BtnReset_Click;
 
             lblTimer.Text = "00:00:00.00";
+
+            // 初期状態のボタン有効化設定
+            UpdateButtonStates();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -38,19 +41,21 @@ namespace StopWatch
 
             TimeSpan ts = stopwatch.Elapsed;
             lblTimer.Text = string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Minutes, ts.Seconds, ts.Milliseconds / 100,(int)(elapsedMicroseconds % 100));
+                ts.Minutes, ts.Seconds, ts.Milliseconds / 100, (int)(elapsedMicroseconds % 100));
         }
 
         private void BtnStart_Click(object sender, EventArgs e)
         {
             stopwatch.Start();
             timer.Start();
+            UpdateButtonStates();
         }
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
             stopwatch.Stop();
             timer.Stop();
+            UpdateButtonStates();
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
@@ -58,6 +63,28 @@ namespace StopWatch
             stopwatch.Reset();
             timer.Stop();
             lblTimer.Text = "00:00:00.00";
+            UpdateButtonStates();
+        }
+
+        private void UpdateButtonStates()
+        {
+            if (stopwatch.IsRunning)
+            {
+                btnStart.Enabled = false;
+                btnStop.Enabled = true;
+                btnReset.Enabled = false;
+            }
+            else
+            {
+                btnStart.Enabled = true;
+                btnStop.Enabled = false;
+                btnReset.Enabled = stopwatch.ElapsedMilliseconds > 0; // リセットは何か時間が経過しているときのみ有効
+            }
+        }
+
+        private void lblTimer_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
